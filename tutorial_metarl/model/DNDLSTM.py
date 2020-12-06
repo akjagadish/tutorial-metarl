@@ -6,8 +6,8 @@ Proceedings of the International Conference on Machine Learning (ICML).
 """
 import torch
 import torch.nn as nn
-from compositional_metarl.model.DND import DND
-from compositional_metarl.model.A2C import A2C_linear
+from tutorial_metarl.model.DND import DND
+from tutorial_metarl.model.A2C import A2C_linear
 
 
 # constants

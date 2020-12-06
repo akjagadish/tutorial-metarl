@@ -299,3 +299,20 @@ def run_model_eval(agent, X, Y, S, n_trials, total_trials=None, init_at=None):
         values.append(Q)
     
     return torch.stack(actions), torch.stack(rewards), torch.stack(regrets), np.hstack(values).T
+
+def _input(one_hot_a_t, r_t, t):
+    """ prepares input to the model
+
+    Args:
+        one_hot_a_t ([torch.tensor]): one hot coded actions
+        r_t ([torch.tensor]): reward
+        t [torch.tensor]: trial index
+
+    Returns:
+        input to the model
+    
+    """
+    
+    return torch.cat((one_hot_a_t.reshape(-1).type(torch.FloatTensor), 
+                  r_t.reshape(-1).type(torch.FloatTensor), 
+                  torch.tensor(t).reshape(-1).type(torch.FloatTensor)), dim=0)

@@ -1,8 +1,8 @@
 import torch
 import torch.nn as nn
-from compositional_metarl.model.DND import DND
-from compositional_metarl.model.A2C import A2C_linear, A2C
-from compositional_metarl.trainers.utils import set_random_seed
+from tutorial_metarl.model.DND import DND
+from tutorial_metarl.model.A2C import A2C_linear, A2C
+from tutorial_metarl.trainers.utils import set_random_seed
 
 # constants
 N_GATES = 4
@@ -12,7 +12,8 @@ class LSTM(nn.Module):
     def __init__(self, hidden_dim, output_dim, bias=True, q_est=False, seed=0):
         super(LSTM, self).__init__() 
         
-        self.input_dim = output_dim + 1 + 1
+        input_dim =  output_dim + 1 + 1 # arms + reward + trial index
+        self.input_dim = input_dim
         self.hidden_dim = hidden_dim
         self.output_dim = output_dim
         self.bias = bias

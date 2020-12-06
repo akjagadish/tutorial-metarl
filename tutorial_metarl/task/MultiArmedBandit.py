@@ -9,7 +9,6 @@ class MultiArmedBandit():
     def __init__(self, cues=None, start_arm=0, end_arm=7, ctx_dim=2, num_rounds=10, normalize=True, best_arms=None, noise_per_arm=False, cue_per_epoch=False):
         
         default_cues = {'linear': [1., 0.], 'periodic': [0., 1.], 'linperiodic': [1., 1.]}
-        #default_cues = {'linear': torch.tensor([1., 0.]), 'periodic': torch.tensor([0., 1.]), 'linperiodic': torch.tensor([1., 1.])}
         default_arms = {'linear': end_arm, 'periodic': end_arm-1, 'linperiodic': end_arm-1} 
         self.cues =  default_cues if cues is None else cues
         self.aoi = default_arms if best_arms is None else best_arms
@@ -47,11 +46,7 @@ class MultiArmedBandit():
             X.append(x)
             Y.append(y)
 
-        # if self.normalize:
         Y = torch.stack(Y)/torch.stack(Y).max(axis=1, keepdims=True).values #.mean()
-        # Y = torch.stack(Y)
-        # Y = (Y - Y.min(1).values.reshape((end_rnd-start_rnd), 1, 1))
-        # Y = Y/Y.max(1).values.max() #values.reshape(self.num_rounds,1,1)
         X = torch.stack(X)
         return X, Y
             
@@ -79,8 +74,6 @@ class MultiArmedBandit():
             phase = np.random.choice(phases)
             y =  amp*torch.abs(torch.sin((x-phase) * (2*np.pi*freq))) + noise
 
-            # x = torch.cat((ctx, torch.tensor(phase).reshape(-1)))
-            # y = torch.randn(1) * np.sqrt(noise_var) - (x-mean)*torch.abs(slope + torch.abs(np.sqrt(noise_slope)*torch.rand((1)))) + offset
         
         elif cue == 'perodd':
             phases = [0.] 
@@ -88,30 +81,11 @@ class MultiArmedBandit():
             y =  amp*torch.abs(torch.sin((x-phase) * (2*np.pi*freq))) + noise
             
         elif cue == 'linear' or cue == 'linpos':
-            
-            # method 1 
-            # k1 = lambda x1, x2, theta: (x1- theta)*(x2-theta)
-            # theta = 0
-            # K1 = np.zeros((self.num_arms, self.num_arms))
-            # for i in range(self.num_arms):
-            #     for j in range(self.num_arms):
-            #         K1[i,j] = k1(x[i],x[j], thetas)
-
-            # method 2
+        
             mean = self.end_arm
             K1 = linear_kernel(x.reshape(-1,1)-mean, x.reshape(-1,1)-mean)
             mu = x*2.5  # torch.linspace(0, self.end_arm, self.num_arms) 
             y = torch.as_tensor(np.random.multivariate_normal(mu, K1, size=1).reshape(1,-1)).squeeze() + noise + offset
-
-            # method 3
-            #y =  torch.randn(1) * np.sqrt(noise_var) + (x-mean)*torch.abs(slope + torch.abs(np.sqrt(noise_slope)*torch.rand((1)))) + offset
-
-            # method 4
-            # signs =  [-1., 1.]
-            # phase = np.random.choice([1.]) #, 1.])
-            # sign = signs[int(phase)]
-            # y =  noise + (x-mean)*sign*(slope + torch.abs(np.sqrt(noise_slope)*torch.rand((1)))) + offset
-            #x = torch.cat((ctx, torch.tensor(phase).reshape(-1)))
 
         elif cue == 'linneg':
 

@@ -1,14 +1,16 @@
 import torch
 import numpy as np
 import  math 
-
+from tutorial_metarl.trainers.utils import set_random_seed
 
 class BernoulliBandit():
 
-    def __init__(self, probs):
+    def __init__(self, seed, probs):
         
+        self.seed = seed
         self.probs  = probs
         self.num_arms = 2
+        set_random_seed(seed)
         
     def sample(self, num_episodes, prob=None):
        
