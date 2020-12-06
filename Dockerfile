@@ -1,4 +1,4 @@
-From sinzlab/pytorch:v3.8-torch1.4.0-cuda10.1-dj0.12.4
+From sinzlab/pytorch:v3.8-torch1.7.0-cuda11.0-dj0.12.7 
 
 # Install essential Ubuntu packages
 # and upgrade pip
@@ -28,9 +28,9 @@ RUN pip3 --no-cache-dir install \
 RUN jupyter labextension install @jupyterlab/debugger
 
 # install the current project as a library
-RUN mkdir /notebooks/compositional_metarl
+RUN mkdir /notebooks/tutorial_metarl
 
-COPY compositional_metarl /notebooks/compositional_metarl
+COPY tutorial_metarl /notebooks/tutorial_metarl
 COPY setup.py /notebooks
 
 RUN python3 setup.py develop
