@@ -1,7 +1,7 @@
 # tutorial on meta-rl
 
 ## pip install
-`pip3 install -r requiremnts` 
+`pip3 install -r requirements` \n
 `python setup.py install`
 
 ## docker
