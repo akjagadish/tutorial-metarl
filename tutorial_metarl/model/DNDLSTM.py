@@ -7,44 +7,21 @@ Proceedings of the International Conference on Machine Learning (ICML).
 import torch
 import torch.nn as nn
 from compositional_metarl.model.DND import DND
-from compositional_metarl.model.A2C import A2C_linear, A2C
-from compositional_metarl.trainers.utils import set_random_seed
+from compositional_metarl.model.A2C import A2C_linear
+
 
 # constants
 N_GATES = 4
-# def __init__(self, hidden_dim, output_dim,
-#             dict_len, ctx_dim=2, inputs='context-action-reward', 
-#             kernel='l2', bias=True, dnd_policy='1NN', 
-#             unique_keys=False, q_est=False, seed=0):
-#         super(QDNDLSTM, self).__init__()
-        
-#         self.inputs = inputs
-#         self.ctx_dim = ctx_dim
-#         if inputs == 'context-action-reward': 
-#             input_dim=ctx_dim+2
-#         elif inputs == 'context':
-#             input_dim = ctx_dim
-#         self.input_dim = input_dim
-#         self.hidden_dim = hidden_dim
-#         self.bias = bias
 
-class MultiDimQDNDLSTM(nn.Module):
 
-    def __init__(self, hidden_dim, output_dim,
-            dict_len, input_dim=None, ctx_dim=2, inputs='context_action_reward', 
-            kernel='cosine', bias=True, dnd_policy='softmax', 
-            unique_keys=False, q_est=False, seed=0):
-        super(MultiDimQDNDLSTM, self).__init__() 
-        if input_dim is None:
-            if inputs == 'context_action_reward':
-                input_dim = ctx_dim + output_dim + 1 # context + num_arms + reward
+class DNDLSTM(nn.Module):
+
+    def __init__(self, input_dim, hidden_dim, output_dim,
+                 dict_len, kernel='l2', bias=True, dnd_policy='1NN', unique_keys=False):
+        super(DNDLSTM, self).__init__()
         self.input_dim = input_dim
-        self.ctx_dim = ctx_dim
         self.hidden_dim = hidden_dim
-        self.output_dim = output_dim
         self.bias = bias
-        # set the manual seed 
-        set_random_seed(seed)
         # input-hidden weights
         self.i2h = nn.Linear(input_dim, (N_GATES+1) * hidden_dim, bias=bias)
         # hidden-hidden weights
@@ -53,8 +30,7 @@ class MultiDimQDNDLSTM(nn.Module):
         self.dnd = DND(dict_len, hidden_dim, kernel, unique_keys=unique_keys)
         self.dnd_policy = dnd_policy
         #
-        self.a2c_dim1 = A2C(hidden_dim, hidden_dim, output_dim, q_est=q_est) #A2C_linear(hidden_dim, output_dim)
-        self.a2c_dim2 = A2C(hidden_dim, hidden_dim, output_dim, q_est=q_est)
+        self.a2c = A2C_linear(hidden_dim, output_dim)
         # init
         self.reset_parameter()
 
@@ -78,35 +54,31 @@ class MultiDimQDNDLSTM(nn.Module):
         gates = preact[:, : N_GATES * self.hidden_dim].sigmoid()
         # split input(write) gate, forget gate, output(read) gate
         f_t = gates[:, :self.hidden_dim]
-        i_t = gates[:, self.hidden_dim: 2*self.hidden_dim]
-        o_t = gates[:, 2*self.hidden_dim: 3*self.hidden_dim]
+        i_t = gates[:, self.hidden_dim:2 * self.hidden_dim]
+        o_t = gates[:, 2*self.hidden_dim:3 * self.hidden_dim]
         r_t = gates[:, -self.hidden_dim:]
         # stuff to be written to cell state
         c_t_new = preact[:, N_GATES * self.hidden_dim:].tanh()
         # new cell state = gated(prev_c) + gated(new_stuff)
         c_t = torch.mul(f_t, c) + torch.mul(i_t, c_t_new)
         # retrieve memory
-        m_t = self.dnd.get_memory(x_t[:self.ctx_dim], self.dnd_policy).tanh()
+        m_t = self.dnd.get_memory(x_t, self.dnd_policy).tanh()
         # gate the memory; in general, can be any transformation of it
         c_t = c_t + torch.mul(r_t, m_t)
         # get gated hidden state from the cell state
         h_t = torch.mul(o_t, c_t.tanh())
         # take a episodic snapshot
-        self.dnd.save_memory(x_t[:self.ctx_dim], c_t)
+        self.dnd.save_memory(x_t, c_t)
         # policy
-        pi_a_t1, v_t1, q_t1 = self.a2c_dim1.forward(h_t)
-        pi_a_t2, v_t2, q_t2 = self.a2c_dim2.forward(h_t)
-
+        pi_a_t, v_t = self.a2c.forward(h_t)
         # pick an action
-        a_t1, prob_a_t1 = self.pick_action(pi_a_t1)
-        a_t2, prob_a_t2 = self.pick_action(pi_a_t2)
-        
+        a_t, prob_a_t = self.pick_action(pi_a_t)
         # reshape data
         h_t = h_t.view(1, h_t.size(0), -1)
         c_t = c_t.view(1, c_t.size(0), -1)
         # fetch activity
-        output = [a_t1, prob_a_t1, v_t1, a_t2, prob_a_t2, v_t2, h_t, c_t]
-        cache = [f_t, i_t, o_t, r_t, m_t, q_t1, pi_a_t1, q_t2, pi_a_t2]
+        output = [a_t, prob_a_t, v_t, h_t, c_t]
+        cache = [f_t, i_t, o_t, r_t, m_t]
         return output, cache
 
     def pick_action(self, action_distribution):
@@ -153,5 +125,3 @@ class MultiDimQDNDLSTM(nn.Module):
         K = [self.dnd.keys[i] for i in range(n_mems)]
         V = [self.dnd.vals[i] for i in range(n_mems)]
         return K, V
-
-
