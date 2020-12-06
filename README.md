@@ -1,8 +1,8 @@
 # tutorial on meta-rl
 
 ## pip install
-pip3 install -r requiremnts
-python setup.py install
+`pip3 install -r requiremnts` 
+`python setup.py install`
 
 ## docker
 ### build docker image
