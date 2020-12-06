@@ -1,12 +1,12 @@
 # tutorial on meta-rl
 
 ## pip install
-`pip3 install -r requirements` \n
+`pip3 install -r requirements`  <br /> 
 `python setup.py install`
 
 ## docker
 ### build docker image
-docker build -t tutorial_metarl .
+`docker build -t tutorial_metarl .`
 ### create .env
 `add JUPYTER_PASSWORD=tutorial_metarl`
 ### run docker container
