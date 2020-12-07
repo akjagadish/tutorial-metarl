@@ -15,4 +15,4 @@ add line `JUPYTER_PASSWORD=tutorial_metarl`
 #### using CPU
 `docker run --rm -d --name dev_user --env-file .env -v "/path/to/tutorial_metarl/:/notebooks/" -w "/notebooks/" -p 1236:8888  tutorial_metarl:latest`
 
-Now, jupyterlab notebook should be accessible at port 1236 
+Now, the notebooks should be accessble at the port 1236 (on your PC `http://localhost:1236/lab?` or on server `http://your.server.ip.address:1236`)
