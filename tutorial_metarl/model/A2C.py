@@ -86,13 +86,14 @@ class A2C_linear(nn.Module):
 
     """
 
-    def __init__(self, dim_input, dim_output):
+    def __init__(self, dim_input, dim_output, q_est=False):
         super(A2C_linear, self).__init__()
         self.dim_input = dim_input
         self.dim_output = dim_output
         self.actor = nn.Linear(dim_input, dim_output)
         self.critic = nn.Linear(dim_input, 1)
-
+        self.q_est = q_est
+            
     def forward(self, x, beta=1):
         """compute action distribution and value estimate, pi(a|s), v(s)
 
@@ -109,9 +110,13 @@ class A2C_linear(nn.Module):
             pi(a|s), v(s)
 
         """
-        action_distribution = softmax(self.actor(x), beta)
+        q_vals = self.actor(x)
+        action_distribution = softmax(q_vals, beta)
         value_estimate = self.critic(x)
-        return action_distribution, value_estimate
+        if self.q_est:
+            return action_distribution, value_estimate, q_vals
+        else:
+            return action_distribution, value_estimate
 
 
 def softmax(z, beta):
