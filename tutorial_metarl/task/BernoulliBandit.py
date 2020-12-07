@@ -38,6 +38,6 @@ class BernoulliBandit():
             
     def _sample_one_episode(self, prob): 
         r1 = torch.bernoulli(torch.as_tensor([prob]))
-        r2 = 1. - r1
+        r2 = torch.bernoulli(torch.as_tensor([1-prob]))
         y = torch.cat((r1, r2))
         return y
