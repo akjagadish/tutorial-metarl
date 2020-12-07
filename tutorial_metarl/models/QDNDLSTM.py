@@ -6,8 +6,8 @@ Proceedings of the International Conference on Machine Learning (ICML).
 """
 import torch
 import torch.nn as nn
-from tutorial_metarl.model.DND import DND
-from tutorial_metarl.model.A2C import A2C_linear, A2C
+from tutorial_metarl.models.DND import DND
+from tutorial_metarl.models.A2C import A2C_linear, A2C
 from tutorial_metarl.trainers.utils import set_random_seed
 
 # constants

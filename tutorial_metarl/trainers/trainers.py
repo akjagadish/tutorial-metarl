@@ -6,8 +6,8 @@ from torch import optim, nn
 from torch.nn import functional as F
 import pdb 
 from tutorial_metarl.trainers.utils import EarlyStopping, set_random_seed
-from tutorial_metarl.model.utils import get_reward, compute_returns, compute_a2c_loss, compute_a2c_loss_multidimMAB
-from tutorial_metarl.model.utils import get_reward_mab, get_reward_multidimMAB, one_hot_embedding, run_agent_inference
+from tutorial_metarl.models.utils import get_reward, compute_returns, compute_a2c_loss, compute_a2c_loss_multidimMAB
+from tutorial_metarl.models.utils import get_reward_mab, get_reward_multidimMAB, one_hot_embedding, run_agent_inference
 
 class Trainer:
 
