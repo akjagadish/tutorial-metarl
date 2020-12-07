@@ -12,6 +12,7 @@ class LSTM(nn.Module):
     def __init__(self, hidden_dim, output_dim, bias=True, q_est=False, seed=0):
         super(LSTM, self).__init__() 
         
+        # input, hidden and output units
         input_dim =  output_dim + 1 + 1 # arms + reward + trial index
         self.input_dim = input_dim
         self.hidden_dim = hidden_dim
