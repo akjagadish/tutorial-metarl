@@ -1,8 +1,8 @@
 # tutorial on meta-rl
 
 ## pip install
-`pip3 install -r requirements`  <br /> 
-`python setup.py install`
+`pip3 install -r requirements`  <br/> 
+`python3 setup.py install`
 
 ## docker
 ### build docker image
@@ -15,4 +15,9 @@ add line `JUPYTER_PASSWORD=tutorial_metarl`
 #### using CPU
 `docker run --rm -d --name dev_user --env-file .env -v "/path/to/tutorial_metarl/:/notebooks/" -w "/notebooks/" -p 1236:8888  tutorial_metarl:latest`
 
-Now, the notebooks should be accessble at the port 1236 (on your PC `http://localhost:1236/lab?` or on server `http://your.server.ip.address:1236`)
+Now, the notebooks should be accessble at the port 1236 (on your PC `http://localhost:1236/lab?` or on the server `http://your.server.ip.address:1236`).
+Note: building docker container takes time and space as it includes a lot of other libraries often used in deep learning. But it can easily be reused as base image for your other containers. 
+
+## conda install
+`conda install PyTorch -c PyTorch`  <br/> 
+``python3 setup.py install`
