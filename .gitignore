@@ -138,4 +138,5 @@ dmypy.json
 *.png 
 *.pt
 *.json
-notebooks/temp/*
+pytorch-gpu/*
+test/*
