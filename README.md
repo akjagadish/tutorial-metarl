@@ -1,8 +1,11 @@
 # tutorial on meta-rl
 
 ## pip install
-`pip3 install -r requirements`  <br/> 
-`python3 setup.py install`
+`cd ~/tutorial-metarl/`
+`python -m venv pytorch-gpu` <br/> 
+`source  pytorch-gpu/bin/activate` <br/> 
+`pip3 install -r requirements.txt`  <br/> 
+`pip3 install -e .`
 
 ## docker
 ### build docker image
@@ -20,4 +23,4 @@ Note: building docker container takes time and space as it includes a lot of oth
 
 ## conda install
 `conda install PyTorch -c PyTorch`  <br/> 
-``python3 setup.py install`
+`python3 setup.py install`
