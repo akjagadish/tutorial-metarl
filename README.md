@@ -1,7 +1,7 @@
 # tutorial on meta-rl
 
 ## pip install
-`cd ~/tutorial-metarl/`
+`cd ~/tutorial-metarl/` <br/> 
 `python -m venv pytorch-gpu` <br/> 
 `source  pytorch-gpu/bin/activate` <br/> 
 `pip3 install -r requirements.txt`  <br/> 
